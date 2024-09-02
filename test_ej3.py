@@ -9,10 +9,10 @@ def _test_nc(result):
   for line in nc_logs:
     print(line, end='')
     
-    if line.startswith(f'action: test_echo_server | result: {result}'):
+    if f'action: test_echo_server | result: {result}' in line:
       return
     
-    if line.startswith('action: test_echo_server | result:'):
+    if 'action: test_echo_server | result:' in line:
       assert False, 'Echo server health check failed'
       
   assert False, 'Echo server health check failed'
