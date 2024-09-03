@@ -56,8 +56,7 @@ def _test_config(target_container):
 				if msg['result'] == line_parser.Result.SUCCESS:
 					break
 			else:
-				#Avoids problems with ANSI escape character
-				if not target_container in msg['source']:
+				if msg['source'] != target_container:
 					continue
 				assert (msg['result'] == line_parser.Result.SUCCESS), f'{target_container} should exit successfully'
 				break

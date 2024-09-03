@@ -1,3 +1,6 @@
+import re
+
+SOURCE_REGEX = r'[a-z]+[0-9]*'
 EXIT_ID_STR = " exited with code "
 ACTION_ID_STR = "action:"
 
@@ -12,12 +15,22 @@ class Result:
 	IN_PROGRESS = "in_progress"
 	FAIL = "fail"
 
+def clean_source(source):
+	matches = re.findall(SOURCE_REGEX, source, flags=0)
+	if len(matches) == 0:
+		return None
+	selected_match = matches[0]
+	for match in matches:
+		if len(match) > len(selected_match):
+			selected_match = match
+	return selected_match
+
 def parse_exit(line_str):
 	if EXIT_ID_STR not in line_str:
 		return None
 	source, code = line_str.split(EXIT_ID_STR)
 	return {
-		"source": source,
+		"source": clean_source(source),
 		"action": "exit",
 		"result":  Result.SUCCESS if int(code) == 0 else Result.FAIL
 	}
@@ -29,7 +42,7 @@ def parse_action(line_str):
 	#Catch not enough
 	source, action, result, *details = line_str.split('|')
 
-	source = source.strip()
+	source = clean_source(source)
 	action = action.split(':')[-1].strip()
 	result = result.split(':')[-1].strip()
 
